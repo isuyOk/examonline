@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script type="text/javascript" src="/js/jquery.min.js"></script>
+		<script type="text/javascript" src="/layer/layer.js"></script>
+		<link rel="stylesheet" href="/css/bootstrap.min.css">
+		<link rel="stylesheet" href="css/amazeui.min.css" />
+		<link rel="stylesheet" href="css/admin.css" />
+	</head>
+
+	<body>
+		<div class="admin-content-body">
+			<div class="am-cf am-padding am-padding-bottom-0">
+				<div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">题库管理</strong><small></small></div>
+			</div>
+
+			<hr>
+
+			<div class="am-g">
+				<div class="am-u-sm-12 am-u-md-6">
+					<div class="am-btn-toolbar">
+						<div class="am-btn-group am-btn-group-xs">
+							<button type="button" class="am-btn am-btn-default" onclick="toAddSingle()"><span class="am-icon-plus"></span> 新增单选题</button>
+						</div>
+						<div class="am-btn-group am-btn-group-xs">
+							<button type="button" class="am-btn am-btn-default" onclick="toAddMulti()"><span class="am-icon-plus" ></span> 新增多选题</button>
+						</div>
+						<div class="am-btn-group am-btn-group-xs">
+							<button type="button" class="am-btn am-btn-default" onclick="toAddJudge()"><span class="am-icon-plus" ></span> 新增判断题</button>
+						</div>
+						<div class="am-btn-group am-btn-group-xs">
+							<button type="button" class="am-btn am-btn-default"><span class="am-icon-plus"></span> 批量导入</button>
+						</div>
+					</div>
+				</div>
+				<div class="am-u-sm-12 am-u-md-3">
+
+				</div>
+				<div class="am-u-sm-12 am-u-md-3">
+					<div class="am-input-group am-input-group-sm">
+						<input type="text" class="am-form-field" id="search_text">
+						<span class="am-input-group-btn">
+            <button class="am-btn am-btn-default" type="button" id="search_btn">搜索</button>
+          </span>
+					</div>
+				</div>
+			</div>
+			<div class="am-g">
+				<div class="am-u-sm-12">
+						<table class="am-table am-table-striped am-table-hover table-main">
+							<thead>
+								<tr>
+
+									<th class="table-id">ID</th>
+									<th class="title-question">题目</th>
+									<th class="title-type">类别</th>
+									<th class="title-type">科目</th>
+									<th class="title-operation">操作</th>
+								</tr>
+							</thead>
+							<tbody id="TBbody">
+
+							</tbody>
+						</table>
+						<div class="am-cf">
+							共 15 条记录
+							<div class="am-fr">
+								<ul class="am-pagination">
+									<li class="am-disabled">
+										<a href="#">«</a>
+									</li>
+									<li class="am-active">
+										<a href="#">1</a>
+									</li>
+									<li>
+										<a href="#">2</a>
+									</li>
+									<li>
+										<a href="#">3</a>
+									</li>
+									<li>
+										<a href="#">4</a>
+									</li>
+									<li>
+										<a href="#">5</a>
+									</li>
+									<li>
+										<a href="#">»</a>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<hr>
+
+				</div>
+
+			</div>
+		</div>
+		<form method="POST"  enctype="multipart/form-data" id="form1" action="/do/upload">
+			<table>
+				<tr>
+					<td>上传文件: </td>
+					<td> <input id="upfile" type="file" name="upfile"></td>
+				</tr>
+				<tr>
+					<td><input type="submit" value="批量导入"></td>
+				</tr>
+			</table>
+		</form>
+<!--		<div class="am-btn-group am-btn-group-xs">-->
+<!--			<button type="button" class="am-btn am-btn-default"><span class="am-icon-plus"></span> 批量导入</button>-->
+<!--		</div>-->
+	
+	</body>
+
+	<script>
+		function toAddSingle() {
+			layer.open({
+				type: 2,
+				title: '添加单选题',
+				maxmin: true,
+				shadeClose: true, //点击遮罩关闭层
+				area : ['500px' , '700px'],
+				offset: ['0px', '200px'],
+				content: 'addsingle.html',
+				end: function () {
+					location.reload();
+				}
+			})
+		}
+
+		function toAddMulti() {
+			layer.open({
+				type: 2,
+				title: '添加多选题',
+				maxmin: true,
+				shadeClose: true, //点击遮罩关闭层
+				area : ['500px' , '700px'],
+				offset: ['0px', '200px'],
+				content: 'addmulti.html',
+				end: function () {
+					location.reload();
+				}
+			})
+		}
+
+		function toAddJudge() {
+			layer.open({
+				type: 2,
+				title: '添加判断题',
+				maxmin: true,
+				shadeClose: true, //点击遮罩关闭层
+				area : ['500px' , '700px'],
+				offset: ['0px', '200px'],
+				content: 'addjudge.html',
+				end: function () {
+					location.reload();
+				}
+			})
+		}
+
+		function show(data){
+			// 清除子元素
+			$("#TBbody").empty()
+			var singles = data.data
+			$.each(singles, function (i, single) {
+				var html = $("<tr></tr>")
+				html.append("<td>" + single.titleId + "</td>")
+				html.append("<td>" + single.question + "</td>")
+				html.append("<td>" + single.titleType + "</td>")
+				html.append("<td>" + single.subjectName + "</td>")
+				html.append("<td><button onclick='doUpdate(this)' class='button'>update</button>" +
+						"<button onclick='doDelete(this)' class='button'>delete</button></td>")
+				html.appendTo("#TBbody")
+			})
+		}
+
+		// 初始化
+		$(function () {
+			$.ajax({
+				url: "/title/findall",
+				type: "GET",
+				success: function (data) {
+					if (data.code == 0) {
+						show(data)
+					} else {
+						layer.msg(data.msg)
+					}
+				}
+			});
+		})
+
+		$("#search_btn").click(function () {
+			var question=$("#search_text").val()
+			$.ajax({
+				url: "/title/search/"+question,
+				type: "GET",
+				success: function (data) {
+					if (data.code == 0) {
+						layer.msg("查询成功")
+						show(data)
+					} else {
+						layer.msg(data.msg)
+					}
+				}
+			});
+		})
+
+		function doUpdate(t) {
+			var id = $(t).parents('tr').find('td:first').text()
+			var type = $(t).parents('tr').find('td:eq(2)').text()
+			var cont=null
+			if (type=="单选题"){
+				cont="updatesingle.html/?titleId="+id
+			}else if (type=="多选题"){
+				cont="updatemulti.html/?titleId="+id
+			} else if (type=="判断题"){
+				cont="updatejudge.html/?titleId="+id
+			}
+			layer.open({
+				type: 2,
+				title: '修改试题',
+				maxmin: true,
+				shadeClose: true, //点击遮罩关闭层
+				area : ['500px' , '700px'],
+				offset: ['0px', '200px'],
+				content: cont,
+				end: function () {
+					location.reload();
+				}
+			})
+		}
+
+		function doDelete(t) {
+			var id = $(t).parents('tr').find('td:first').text()
+			layer.confirm("确定删除？", {btn: ["确定", "取消"]},
+					function () {
+						layer.closeAll();
+						// window.location.href="/user/doupdate";
+						$.ajax({
+							url: "/title/dodelete/" + id,
+							type: "POST",
+							success: function (data) {
+								if (data.code == 0) {
+									layer.msg("删除成功")
+									location.reload()
+								} else {
+									layer.msg(data.msg)
+								}
+							}
+						});
+					},
+					function () {
+						layer.closeAll();
+					});
+		}
+
+
+	</script>
+
+</html>

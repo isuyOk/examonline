@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/layer/layer.js"></script>
+    <script type="text/javascript" src="/js/common.js"></script>
+
+
+</head>
+<body>
+<!-- top -->
+
+<!-- top结束 -->
+
+<!-- mid-begin -->
+<div class="container">
+    <div class="row">
+
+
+
+        <!-- 页面主体 -->
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <h1>用户信息修改</h1>
+            <form>
+                <input type="hidden" name="userId" id="userId">
+                <div class="form-group">
+                    <label for="name">用户名</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Username">
+                </div>
+                <div class="form-group">
+                    <label for="age">年龄</label>
+                    <input type="text" class="form-control" id="age" name="age" placeholder="Age">
+                </div>
+                <div class="form-group">
+                    <label for="email">邮箱地址</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Email address">
+                </div>
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <input type="password"  name="password" class="form-control" id="password" placeholder="Password">
+                </div>
+                <div class="form-group">
+                    <label for="gender">性别</label>
+                    <select name="gender" id="gender">
+                        <option value="男">男</option>
+                        <option value="女">女</option>
+                    </select>
+                </div>
+
+                <input type="hidden" value="general" name="userType" id="userType">
+
+            </form>
+            <button id="btn" type="submit" class="btn btn-default" onclick="updateUser()">保存</button>
+            <!-- 页面主体结束 -->
+        </div>
+
+        <!-- mid-end -->
+    </div>
+</div>
+
+</body>
+<script>
+    // 初始化
+    $(function () {
+        var userId = g_getQueryString("userId");
+        $.ajax({
+            url:"/user/get_user/"+userId,
+            type:"GET",
+            success:function (data) {
+                if (data.code==0){
+                    var user=data.data;
+                    $("#userId").val(userId)
+                    $("#name").val(user.name)
+                    $("#age").val(user.age)
+                    $("#email").val(user.email)
+                    $("#gender").val(user.gender)
+                    $("#password").val(user.password)
+                } else {
+                    layer.msg(data.msg)
+                }
+            }
+        });
+
+    })
+
+    function updateUser() {
+        layer.confirm("确定修改？", {btn:["确定","取消"]},
+            function(){
+                layer.closeAll();
+                // window.location.href="/user/doupdate";
+                $.ajax({
+                    url:"/user/doupdate",
+                    type:"POST",
+                    data:{
+                        userId:$("#userId").val(),
+                        name:$("#name").val(),
+                        age:$("#age").val(),
+                        email:$("#email").val(),
+                        password:$("#password").val(),
+                        userType:$("#userType").val(),
+                        gender:$("#gender").val()
+                    },
+                    success:function (data) {
+                        if (data.code==0){
+                            layer.msg("更新成功")
+                            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                            parent.layer.close(index); //再执行关闭
+                        } else {
+                            layer.msg(data.msg)
+                        }
+                    }
+                });
+
+            },
+            function(){
+                layer.closeAll();
+            });
+    }
+
+</script>
+</html>

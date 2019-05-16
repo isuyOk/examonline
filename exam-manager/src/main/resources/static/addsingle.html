@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/layer/layer.js"></script>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+<!-- top -->
+
+<!-- top结束 -->
+
+<!-- mid-begin -->
+<div class="container-fluid">
+    <div class="row">
+
+
+        <!-- 左侧导航栏 -->
+
+				
+				<!-- 页面主体 -->
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+					<h1>单选题添加</h1>
+					<form method="post">
+					  <div class="form-group">
+							<label for="question">question</label>
+              <textarea class="form-control" rows="3" id="question" name="question" ></textarea>
+					  </div>
+					  <div class="form-group">
+					    <label for="ansa">answera</label>
+					    <input type="text" class="form-control" id="ansa" placeholder="answera">
+					  </div>
+						<div class="form-group">
+						  <label for="ansb">answerb</label>
+						  <input type="text" class="form-control" id="ansb" placeholder="answerb">
+						</div>
+						<div class="form-group">
+						  <label for="ansc">answerc</label>
+						  <input type="text" class="form-control" id="ansc" placeholder="answerc" >
+						</div>
+						<div class="form-group">
+						  <label for="ansd">answerd</label>
+						  <input type="text" class="form-control" id="ansd" placeholder="answerd">
+						</div>
+						
+						<!-- 隐藏其他选项的输入，默认为空 -->
+						<div class="form-group hidden">
+						  <label for="anse">answere</label>
+						  <input type="text" class="form-control" id="anse" placeholder="answere">
+						</div>
+						<div class="form-group hidden">
+						  <label for="ansf">answerf</label>
+						  <input type="text" class="form-control" id="ansf" placeholder="answerf">
+						</div>
+						<div class="form-group">
+						  <label for="anst">answert</label>
+						  <input type="text" class="form-control" id="anst" placeholder="answer true">
+						</div>
+                        <div class="form-group">
+                            <label>subject:</label>
+
+                            <div id="sj"></div>
+                        </div>
+						<div class="form-group hidden">
+						  <label for="titleType">titleType</label>
+						  <input type="text" class="form-control" id="titleType" placeholder="titleType" value="单选题">
+						</div>
+
+					</form>
+            <button type="submit" class="btn btn-default" onclick="addSingle()">Submit</button>
+					<!-- 页面主体结束 -->
+        </div>
+
+				<!-- mid-end -->
+      </div>
+    </div>
+</body>
+<script>
+    // 初始化
+    $(function () {
+        $.ajax({
+            url:"/subject/get_all",
+            type:"GET",
+            success:function (data) {
+                if (data.code==0){
+                    // 渲染subject信息
+                    var html=$("<select id='subject'></select>")
+                    $.each(data.data,function (i,subject) {
+                        html.append("<option value='"+subject.subjectId+"'>"+subject.name+"</option>")
+                       html.appendTo($("#sj"))
+                    })
+
+                } else {
+                    layer.msg(data.msg)
+                }
+            }
+        });
+
+    })
+    function addSingle() {
+        alert($("#subject").val())
+        layer.confirm("确定添加？", {btn:["确定","取消"]},
+            function(){
+                layer.closeAll();
+                // window.location.href="/user/doupdate";
+                $.ajax({
+                    url:"/title/doadd",
+                    type:"POST",
+                    data:{
+                        question:$("#question").val(),
+                        ansa:$("#ansa").val(),
+                        ansb:$("#ansb").val(),
+                        ansc:$("#ansc").val(),
+                        ansd:$("#ansd").val(),
+                        anst:$("#anst").val(),
+                        subjectId:$("#subject").val(),
+                        titleType:$("#titleType").val()
+                    },
+                    success:function (data) {
+                        if (data.code==0){
+                            layer.msg("添加成功")
+                            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                            parent.layer.close(index); //再执行关闭
+                            // $("#question").val("")
+                            // $("#ansa").val("")
+                            // $("#ansb").val("")
+                            // $("#ansc").val("")
+                            // $("#ansd").val("")
+                            // $("#anst").val("")
+                            // window.location.href="/user/all"
+                        } else {
+                            layer.msg(data.msg)
+                        }
+                    }
+                });
+
+            },
+            function(){
+                layer.closeAll();
+            });
+    }
+
+</script>
+</html>

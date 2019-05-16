@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/layer/layer.js"></script>
+    <script type="text/javascript" src="/js/common.js"></script>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+</head>
+<body>
+<!-- top -->
+
+<!-- top结束 -->
+
+<!-- mid-begin -->
+<div class="container-fluid">
+    <div class="row">
+
+
+        <!-- 左侧导航栏 -->
+
+				<!-- 页面主体 -->
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+					<h1>单选题修改</h1>
+					<form method="post">
+						<input type="hidden" name="titleId" id="titleId">
+					  <div class="form-group">
+							<label for="question">question</label>
+              <textarea class="form-control" rows="3" name="question" id="question"></textarea>
+					  </div>
+					  <div class="form-group">
+					    <label for="ansa">answera</label>
+					    <input type="text" class="form-control" id="ansa" placeholder="answera">
+					  </div>
+						<div class="form-group">
+						  <label for="ansb">answerb</label>
+						  <input type="text" class="form-control" id="ansb" placeholder="answerb">
+						</div>
+						<div class="form-group">
+                            <label for="ansc">answerc</label>
+                            <input type="text" class="form-control" id="ansc" placeholder="answerc">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ansc">answerd</label>
+                            <input type="text" class="form-control" id="ansd" placeholder="answerd">
+                        </div>
+
+
+                        <!-- 隐藏其他选项的输入，默认为空 -->
+                        <div class="form-group hidden">
+                            <label for="anse">answere</label>
+                            <input type="text" class="form-control" id="anse" placeholder="answere">
+                        </div>
+                        <div class="form-group hidden">
+                            <label for="ansf">answerf</label>
+                            <input type="text" class="form-control" id="ansf" placeholder="answerf">
+                        </div>
+                        <div class="form-group">
+                            <label for="anst">answert</label>
+                            <input type="text" class="form-control" id="anst" placeholder="answert">
+                        </div>
+                        <div class="form-group hidden">
+                            <label for="titleType">titleType</label>
+                            <input type="text" class="form-control" id="titleType" placeholder="titleType">
+                        </div>
+                        <div class="form-group">
+                            <label for="anst">subject</label>
+                            <div id="sj"></div>
+                        </div>
+
+					</form>
+                    <button type="submit" class="btn btn-default" onclick="updateSingle()">Submit</button>
+		
+					<!-- 页面主体结束 -->
+        </div>
+				
+				<!-- mid-end -->
+      </div>
+    </div>
+
+
+  
+
+</body>
+<script>
+    // 初始化
+    $(function () {
+        var titleId = g_getQueryString("titleId");
+        $.ajax({
+            url:"/title/init_update/"+titleId,
+            type:"GET",
+            success:function (data) {
+                if (data.code==0){
+                    var title=data.data.title;
+                    var subjects=data.data.subjects;
+
+                    $("#titleId").val(titleId)
+                    $("#question").text(title.question)
+                    $("#ansa").val(title.ansa)
+                    $("#ansb").val(title.ansb)
+                    $("#ansc").val(title.ansc)
+                    $("#ansd").val(title.ansd)
+                    $("#anse").val(title.anse)
+                    $("#ansf").val(title.ansf)
+                    $("#anst").val(title.anst)
+                    $("#titleType").val(title.titleType)
+
+                    // 生成subject下拉菜单
+                    var html=$("<select id='subject'></select>")
+                    $.each(subjects,function (i,subject) {
+                        html.append("<option value='"+subject.subjectId+"'>"+subject.name+"</option>")
+                        html.appendTo($("#sj"))
+                    })
+
+                } else {
+                    layer.msg(data.msg)
+                }
+            }
+        });
+
+    })
+
+
+    function updateSingle() {
+        layer.confirm("确定修改？", {btn:["确定","取消"]},
+            function(){
+                layer.closeAll();
+                $.ajax({
+                    url:"/title/doupdate",
+                    type:"POST",
+                    data:{
+                        titleId:$("#titleId").val(),
+                        question:$("#question").val(),
+                        ansa:$("#ansa").val(),
+                        ansb:$("#ansb").val(),
+                        ansc:$("#ansc").val(),
+                        ansd:$("#ansd").val(),
+                        anse:$("#anse").val(),
+                        ansf:$("#ansf").val(),
+                        anst:$("#anst").val(),
+                        titleType:$("#titleType").val(),
+                        subjectId:$("#subject").val(),
+                    },
+                    success:function (data) {
+                        if (data.code==0){
+                            layer.msg("更新成功")
+                            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                            parent.layer.close(index); //再执行关闭
+                        } else {
+                            layer.msg(data.msg)
+                        }
+                    }
+                });
+
+            },
+            function(){
+                layer.closeAll();
+            });
+    }
+</script>
+</html>
